@@ -9,20 +9,20 @@ import { unstable_getServerSession } from "next-auth/next"
 
 import ClippedDrawer from "../../../components/ClippedDrawer"
 import { authOptions } from '../../api/auth/[...nextauth]';
-import ValidatorMenu from '../../../components/dashboard/ValidatorMenu';
-import NewTestCodeForm from '../../../components/test_code/Form'
-import { VALIDATOR } from '../../../helper/constants';
+import { ADMIN } from '../../../helper/constants';
+import AdminMenu from '../../../components/dashboard/AdminMenu';
+import GroupForm from '../../../components/admin/GroupForm';
 
-export default function NewParameterizationTest() {
+export default function NewGroup() {
 
 	return (
-		<ClippedDrawer sidebar={<ValidatorMenu selected={"test_codes"} />}>
+		<ClippedDrawer sidebar={<AdminMenu selected={"groups"} />}>
 			<Breadcrumbs>
-				<Link underline="hover" href="/dashboard/test_codes">Back</Link>
-				<Typography color="text.primary">New Test Code</Typography>
+				<Link underline="hover" href="/admin/groups">Back</Link>
+				<Typography color="text.primary">New Group</Typography>
 			</Breadcrumbs>
 			<br/>
-			<NewTestCodeForm />
+			<GroupForm />
 		</ClippedDrawer>
 	)
 }
@@ -30,7 +30,7 @@ export default function NewParameterizationTest() {
 export async function getServerSideProps(context) {
 	const session = await unstable_getServerSession(context.req, context.res, authOptions)
 
-	if(!session || !session.user || session.user.role !== VALIDATOR) {
+	if(!session || !session.user || session.user.role !== ADMIN) {
 		return {
 			redirect: {
 				destination: '/',

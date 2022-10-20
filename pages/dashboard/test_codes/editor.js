@@ -110,7 +110,7 @@ export default function TestCodeEditor({ data, user }) {
       </Modal>
 			<br/>
 			{
-				open ? '' : <CodeEditor template={templates[template]} />
+				open ? '' : <CodeEditor template={templates[template]} readOnly={false} />
 			}
 		</ClippedDrawer>
 	)
@@ -120,20 +120,11 @@ export default function TestCodeEditor({ data, user }) {
 export async function getServerSideProps(context) {
 	const session = await unstable_getServerSession(context.req, context.res, authOptions)
 
-	if(!session.user) {
+	if(!session || !session.user || session.user.role !== VALIDATOR) {
 		return {
 			redirect: {
 				destination: '/',
 				permanent: false
-			}
-		}
-	} else {
-		if(session.user.role !== VALIDATOR) {
-			return {
-				redirect: {
-					destination: '/',
-					permanent: false
-				}
 			}
 		}
 	}

@@ -121,20 +121,11 @@ export default function TestCode({ data, user }) {
 export async function getServerSideProps(context) {
 	const session = await unstable_getServerSession(context.req, context.res, authOptions)
 
-	if(!session.user) {
+	if(!session || !session.user || session.user.role !== VALIDATOR) {
 		return {
 			redirect: {
 				destination: '/',
 				permanent: false
-			}
-		}
-	} else {
-		if(session.user.role !== VALIDATOR) {
-			return {
-				redirect: {
-					destination: '/',
-					permanent: false
-				}
 			}
 		}
 	}

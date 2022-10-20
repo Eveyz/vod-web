@@ -1,30 +1,29 @@
 import { useEffect } from 'react'
 import Link from 'next/link';
 
-import { Box, Card, CardContent, Button, Typography, Snackbar, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton } from '@mui/material';
+import { Box, Card, CardContent, Button, Typography, Snackbar, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from "@mui/x-data-grid";
 import { unstable_getServerSession } from "next-auth/next"
 
 import ClippedDrawer from "../../../components/ClippedDrawer"
 import { authOptions } from '../../api/auth/[...nextauth]';
-import ValidatorMenu from '../../../components/dashboard/ValidatorMenu';
-import { VALIDATOR } from '../../../helper/constants';
+import { GATEKEEPER } from '../../../helper/constants';
+import GateKeeperMenu from '../../../components/dashboard/GateKeeperMenu';
+import AssignValidator from '../../../components/gatekeeper/AssignValidator';
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'name',
-    headerName: 'Test Name',
+    field: 'modelID',
+    headerName: 'Model ID',
     width: 150,
     editable: false,
 		sortable: false,
   },
   {
-    field: 'type',
-    headerName: 'Test Type',
+    field: 'modelName',
+    headerName: 'Model name',
     width: 150,
     editable: false,
 		sortable: false,
@@ -33,20 +32,19 @@ const columns = [
     field: 'description',
     headerName: 'Description',
     sortable: false,
-    width: 300
+    width: 160
   },
 	{
-    field: 'validatorComments',
-    headerName: 'Validator Comments',
-		description: 'Add comments to your validation test',
-    width: 350,
+    field: 'validator',
+    headerName: 'Validator',
+    width: 200,
     editable: false,
 		sortable: false,
   },
 	{
     field: "action",
     headerName: "Action",
-		width: 150,
+		width: 260,
 		editable: false,
     sortable: false,
 		disableSelectionOnClick: true,
@@ -67,36 +65,18 @@ const columns = [
         return alert(JSON.stringify(thisRow, null, 4));
       };
 
-			return <>
-				<IconButton aria-label="edit" color="primary">
-					<EditIcon />
-				</IconButton>
-				<IconButton
-					aria-label="delete"
-					color="error"
-					onClick={() => {
-						if(window.confirm('Are you sure to delete this record?')) { 
-							// deleteTest()
-						}
-					}}
-				>
-					<DeleteIcon />
-				</IconButton>
-			</>
+			return <AssignValidator validator={params.row.validator} validators={params.row.validators} />
     }
   },
 ];
 
-export default function ParameterizationTests({ data, user }) {
+export default function ValidationModels({ data, user }) {
 
 	return (
-		<ClippedDrawer sidebar={<ValidatorMenu selected={"parameterization_tests"} />}>
-			<Link href="/dashboard/parameterization_tests/new">
-				<Button variant="outlined">
-					New Tests
-				</Button>
-			</Link>
-			<br/>
+		<ClippedDrawer sidebar={<GateKeeperMenu selected={"validation_models"} />}>
+			<Typography variant="h5" component="div">
+				Models
+			</Typography>
 			<br/>
 			{
 				data.length ?
@@ -106,7 +86,6 @@ export default function ParameterizationTests({ data, user }) {
 						columns={columns}
 						pageSize={5}
 						rowsPerPageOptions={[5]}
-						checkboxSelection
 						disableSelectionOnClick
 						experimentalFeatures={{ newEditingApi: true }}
 					/>
@@ -128,7 +107,7 @@ export default function ParameterizationTests({ data, user }) {
 export async function getServerSideProps(context) {
 	const session = await unstable_getServerSession(context.req, context.res, authOptions)
 
-	if(!session || !session.user || session.user.role !== VALIDATOR) {
+	if(!session || !session.user || session.user.role !== GATEKEEPER) {
 		return {
 			redirect: {
 				destination: '/',
@@ -138,15 +117,15 @@ export async function getServerSideProps(context) {
 	}
 
 	const data = [
-		{ id: 1, name: '14144', description: 'Jon', validatorComments: 35 },
-		{ id: 2, name: '14145', description: 'Cersei', validatorComments: 42 },
-		{ id: 3, name: '14146', description: 'Jaime', validatorComments: 45 },
-		{ id: 4, name: '14147', description: 'Arya', validatorComments: 16 },
-		{ id: 5, name: '14148', description: 'Daenerys', validatorComments: null },
-		{ id: 6, name: '14149', description: null, validatorComments: 150 },
-		{ id: 7, name: '14150', description: 'Ferrara', validatorComments: 44 },
-		{ id: 8, name: '14151', description: 'Rossini', validatorComments: 36 },
-		{ id: 9, name: '14152', description: 'Harvey', validatorComments: 65 },
+		{ id: 1, modelID: '14144', modelName: 'Jon', validator: 'Jon', validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 2, modelID: '14145', modelName: 'Cersei', validator: null, validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 3, modelID: '14146', modelName: 'Jaime', validator: 'Jaime', validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 4, modelID: '14147', modelName: 'Arya', validator: 'Arya', validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 5, modelID: '14148', modelName: 'Daenerys', validator: 'Daenerys', validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 6, modelID: '14149', modelName: null, validator: null, validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 7, modelID: '14150', modelName: 'Ferrara', validator: 'Ferrara', validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 8, modelID: '14151', modelName: 'Rossini', validator: 'Rossini', validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 9, modelID: '14152', modelName: 'Harvey', validator: 'Harvey', validators: ['Jon', 'Jaime', 'Arya'] },
 	];
 
 	const user = { id: session.user.id, role: session.user.role }

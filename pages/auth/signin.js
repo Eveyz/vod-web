@@ -14,7 +14,7 @@ export default function Signin() {
   }
 
 	return (
-		<Layout>
+		<Layout url={"/"} isAuthenticated={false}>
 			<Grid container style={{marginTop: "30px"}}>
         <Grid item xs={4}></Grid>
         <Grid item xs={4}>

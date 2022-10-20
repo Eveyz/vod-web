@@ -5,14 +5,14 @@ import { Box, Card, CardContent, Button, Typography, Snackbar, List, Divider, Li
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CodeIcon from '@mui/icons-material/Code';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
 import { DataGrid } from "@mui/x-data-grid";
 import { unstable_getServerSession } from "next-auth/next"
 
-import ClippedDrawer from "../../../components/ClippedDrawer"
-import { authOptions } from '../../api/auth/[...nextauth]';
-import GateKeeperMenu from '../../../components/dashboard/GateKeeperMenu';
-import { VALIDATOR } from '../../../helper/constants';
+import ClippedDrawer from "../../../../components/ClippedDrawer"
+import { authOptions } from '../../../api/auth/[...nextauth]';
+import { GATEKEEPER } from '../../../../helper/constants';
+import GateKeeperMenu from '../../../../components/dashboard/GateKeeperMenu';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -54,38 +54,29 @@ const columns = [
       };
 
 			return <>
-				<IconButton aria-label="edit" color="primary">
-					<EditIcon />
-				</IconButton>
 				<IconButton
 					aria-label="delete" 
 					color="error"
 					onClick={() => {
-						if(window.confirm('Are you sure to delete this record?')) { 
+						if(window.confirm('Are you sure to remove this member?')) { 
 							// deleteTest()
 						}
 					}}
 				>
-					<DeleteIcon />
+					<PersonOffIcon />
 				</IconButton>
-				<Link href="/dashboard/test_codes/editor">
-					<IconButton aria-label="code">
-						<CodeIcon />
-					</IconButton>
-				</Link>
 			</>
     }
   },
 ];
 
-export default function GateKeeper({ data, user }) {
+export default function Groups({ data, user }) {
 
 	return (
-		<ClippedDrawer sidebar={<GateKeeperMenu selected={"test_codes"} />}>
+		<ClippedDrawer sidebar={<GateKeeperMenu selected={"groups"} />}>
 			<Typography variant="h5" component="div">
-				Test Codes
+				DSAI
 			</Typography>
-			<br/>
 			<br/>
 			{
 				data.length ?
@@ -106,7 +97,7 @@ export default function GateKeeper({ data, user }) {
 				<Card>
 					<CardContent>
 						<Typography variant="h5" gutterBottom>
-							No test codes found
+							No group members found
 						</Typography>
 					</CardContent>
 				</Card>
@@ -119,34 +110,24 @@ export default function GateKeeper({ data, user }) {
 export async function getServerSideProps(context) {
 	const session = await unstable_getServerSession(context.req, context.res, authOptions)
 
-	if(!session.user) {
+	if(!session || !session.user || session.user.role !== GATEKEEPER) {
 		return {
 			redirect: {
 				destination: '/',
 				permanent: false
 			}
 		}
-	} else {
-		if(session.user.role !== VALIDATOR) {
-			return {
-				redirect: {
-					destination: '/',
-					permanent: false
-				}
-			}
-		}
 	}
 
 	const data = [
-		{ id: 1, name: 'AUC', description: 'Jon' },
-		{ id: 2, name: 'ACC', description: 'Cersei' },
-		{ id: 3, name: 'PSI', description: 'Jaime' },
-		{ id: 4, name: '14147', description: 'Arya' },
-		{ id: 5, name: '14148', description: 'Daenerys' },
-		{ id: 6, name: '14149', description: null },
-		{ id: 7, name: '14150', description: 'Ferrara' },
-		{ id: 8, name: '14151', description: 'Rossini' },
-		{ id: 9, name: '14152', description: 'Harvey' },
+		{ id: 1, name: 'Jon', description: 'Jon' },
+		{ id: 2, name: 'Cersei', description: 'Cersei' },
+		{ id: 3, name: 'Jaime', description: 'Jaime' },
+		{ id: 4, name: 'Arya', description: 'Arya' },
+		{ id: 5, name: 'Daenerys', description: 'Daenerys' },
+		{ id: 6, name: 'Ferrara', description: 'Ferrara' },
+		{ id: 7, name: 'Rossini', description: 'Rossini' },
+		{ id: 8, name: 'Harvey', description: 'Harvey' },
 	];
 
 	const user = { id: session.user.id, role: session.user.role }

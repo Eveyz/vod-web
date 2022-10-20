@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import QuizIcon from '@mui/icons-material/Quiz';
+import GroupsIcon from '@mui/icons-material/Groups';
 import CodeIcon from '@mui/icons-material/Code';
 
 export default function GateKeeperMenu({ selected }) {
@@ -33,9 +34,9 @@ export default function GateKeeperMenu({ selected }) {
 					<ListItem disablePadding selected={selected === "groups"}>
 						<ListItemButton>
 							<ListItemIcon>
-								<AssignmentIcon />
+								<GroupsIcon />
 							</ListItemIcon>
-							<ListItemText primary='Validation Tasks' />
+							<ListItemText primary='Group' />
 						</ListItemButton>
 					</ListItem>
 				</Link>

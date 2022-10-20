@@ -25,7 +25,7 @@ export async function getServerSideProps(context) {
     } else if(session.user.role === DEVELOPER) {
       url = '/dashboard/models'
     } else if(session.user.role === GATEKEEPER) {
-			url = '/dashboard/gatekeeper'
+			url = '/dashboard/gatekeeper/test_codes'
 		}
 		return {
 			redirect: {

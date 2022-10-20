@@ -3,28 +3,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { signOut } from 'next-auth/react'
 
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
-import { orange } from '@mui/material/colors';
+import { ThemeProvider } from '@mui/material/styles';
 import { Box, Button, Drawer, AppBar, CssBaseline, Toolbar, Typography, Menu, MenuItem, IconButton  } from '@mui/material'
 import AccountCircle from '@mui/icons-material/AccountCircle';
-
-const theme = createTheme({
-  palette: {
-    custom: {
-      light: '#D61F28',
-      main: '#D61F28',
-      dark: '#D61F28',
-    },
-    white: {
-      light: '#fff',
-      main: '#fff',
-      dark: '#fff',
-    }
-  },
-  status: {
-    danger: orange[500],
-  },
-});
+import theme from '../helper/theme';
 
 const drawerWidth = 240;
 
@@ -46,11 +28,13 @@ export default function ClippedDrawer({ sidebar, selected, children }) {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="fixed" color="custom" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <AppBar position="fixed" color="header" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Toolbar>
-            <Typography variant="h6" style={{color:"#fff"}} component="div" sx={{ flexGrow: 1 }}>
-              VOD
-            </Typography>
+            <Link href="/">
+              <Typography variant="h6" style={{color:"#fff", cursor: 'pointer'}} component="div" sx={{ flexGrow: 1 }}>
+                VOD
+              </Typography>
+            </Link>
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
               <div>
                 <IconButton
