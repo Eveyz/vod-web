@@ -1,11 +1,16 @@
-import axios from 'axios'
-import { useSession } from 'next-auth/react';
+import axios from "axios";
+import { getSession } from "next-auth"; // only work for client side
 
-const ax = axios.create({
+const httpClient = axios.create({
   headers: {
-    'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json'
   }
-})
+});
+
+httpClient.interceptors.request.use(async config => {
+  const session = await getSession();
+  config.headers["Authorization"] = `Bearer ${session?.accessToken}`;
+  return config; 
+});
 
 export default ax
