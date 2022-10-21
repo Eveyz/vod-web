@@ -2,6 +2,7 @@ import NextAuth from "next-auth/next";
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios'
 import { ADMIN, DEVELOPER, VALIDATOR, GATEKEEPER } from "../../../helper/constants";
+import { signIn } from '../../../actions/auth'
 
 /* 
 
@@ -121,6 +122,9 @@ export const authOptions = {
 			async authorize(credentials, req) {
 				console.log("credentials: ", credentials)
 				// TODO: connect with backend API
+
+				// signIn(credentials)
+
 				// const res = await axios.post(YOUR_API_URL + 'auth/signin', {
 				// 	username: credentials.username,
 				// 	password: credentials.password,

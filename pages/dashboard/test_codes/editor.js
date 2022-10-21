@@ -110,7 +110,7 @@ export default function TestCodeEditor({ data, user }) {
       </Modal>
 			<br/>
 			{
-				open ? '' : <CodeEditor template={templates[template]} readOnly={false} />
+				open ? '' : <CodeEditor template={templates[template]} />
 			}
 		</ClippedDrawer>
 	)

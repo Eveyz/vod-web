@@ -199,6 +199,15 @@ export default function CodeEditor({template}) {
       <IconButton variant="contained" color="warning" disabled={!isEditorReady || running} aria-label="refresh" sx={{my: 1, ml: 2}} onClick={reset}>
         <Replay />
       </IconButton>
+      <Button
+        variant="contained"
+        sx={{my: 1, ml: 2}}
+        onClick={runCode}
+        disabled={!isEditorReady || running}
+        startIcon={<DirectionsRun />}
+      >
+        Save
+      </Button>
     </>
   );
 };
