@@ -1,10 +1,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link';
 
-import { Box, Card, CardContent, Button, Typography, Snackbar, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, Breadcrumbs } from '@mui/material';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { DataGrid } from "@mui/x-data-grid";
+import { Typography, Breadcrumbs } from '@mui/material';
 import { unstable_getServerSession } from "next-auth/next"
 
 import ClippedDrawer from "../../../components/ClippedDrawer"
@@ -12,8 +9,14 @@ import { authOptions } from '../../api/auth/[...nextauth]';
 import { ADMIN } from '../../../helper/constants';
 import AdminMenu from '../../../components/dashboard/AdminMenu';
 import GroupForm from '../../../components/admin/GroupForm';
+import { add_doc } from '../../../actions/firebase';
 
 export default function NewGroup() {
+
+	const addGroup = (group) => {
+		group['members'] = 0
+		add_doc("groups", group)
+	}
 
 	return (
 		<ClippedDrawer sidebar={<AdminMenu selected={"groups"} />}>
@@ -22,7 +25,7 @@ export default function NewGroup() {
 				<Typography color="text.primary">New Group</Typography>
 			</Breadcrumbs>
 			<br/>
-			<GroupForm />
+			<GroupForm handleSubmit={addGroup} />
 		</ClippedDrawer>
 	)
 }

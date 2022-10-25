@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { Box, Card, CardContent, Button, Typography, Snackbar, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Breadcrumbs, Modal, Stack } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CodeIcon from '@mui/icons-material/Code';
-import { DataGrid } from "@mui/x-data-grid";
 import { unstable_getServerSession } from "next-auth/next"
 
-import ClippedDrawer from "../../../components/ClippedDrawer"
-import { authOptions } from '../../api/auth/[...nextauth]';
-import ValidatorMenu from '../../../components/dashboard/ValidatorMenu';
-import { VALIDATOR } from '../../../helper/constants';
-import CodeEditor from '../../../components/test_code/CodeEditor'
+import ClippedDrawer from "../../../../components/ClippedDrawer"
+import { authOptions } from '../../../api/auth/[...nextauth]';
+import ValidatorMenu from '../../../../components/dashboard/ValidatorMenu';
+import { VALIDATOR } from '../../../../helper/constants';
+import CodeEditor from '../../../../components/test_code/CodeEditor'
+import { get_doc, update_doc } from '../../../../actions/firebase';
 
 const style = {
   position: 'absolute',
@@ -59,17 +56,24 @@ const templates = {
   }\n}`
 }
 
-export default function TestCodeEditor({ data, user }) {
+export default function TestCodeEditor({ test_code, test_id }) {
 
-	const [open, setOpen] = useState(true) // open config form
+	const router = useRouter()
+
+	const [open, setOpen] = useState(test_code ? false : true) // open template selection
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
-	const [template, setTemplate] = useState('PiML') // open config form
+	const [template, setTemplate] = useState('PiML') // set template
 
 	const selectTemplate = (t) => {
 		setTemplate(t)
 		handleClose()
+	}
+
+	const saveCode = async (code) => {
+		await update_doc("test_codes", test_id, {"code": code})
+		router.push("/dashboard/test_codes")
 	}
 
 	return (
@@ -110,7 +114,7 @@ export default function TestCodeEditor({ data, user }) {
       </Modal>
 			<br/>
 			{
-				open ? '' : <CodeEditor template={templates[template]} />
+				open ? '' : <CodeEditor saveCode={saveCode} template={test_code ? test_code : templates[template]} />
 			}
 		</ClippedDrawer>
 	)
@@ -129,9 +133,11 @@ export async function getServerSideProps(context) {
 		}
 	}
 
+	const test_id = context.query.id
 	const user = { id: session.user.id, role: session.user.role }
+	const test_code = (await get_doc("test_codes", test_id))?.code ?? null
 
 	return {
-		props: { user }
+		props: { user, test_code, test_id }
 	}
 }

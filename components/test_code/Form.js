@@ -10,12 +10,14 @@ import SelectTestCode from './SelectTestCode'
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
-export default function NewTestCodeForm() {
+const types = ["Performance", "Fairness"]
+
+export default function NewTestCodeForm({handleSubmit, test}) {
 
 	const [submitted, setSubmitted] = useState(false);
 
-	const [requiredCapabilties, setRequiredCapabilties] = useState([]);
-	const [supportedCapabilties, setSupportedCapabilties] = useState([]);
+	const [requiredCapabilties, setRequiredCapabilties] = useState(test ? test['required_capabilties'] : []);
+	const [supportedCapabilties, setSupportedCapabilties] = useState(test ? test['supported_capabilties'] : []);
 
   const handleChangeSupportedCapabilties = (event) => {
     const {
@@ -37,26 +39,25 @@ export default function NewTestCodeForm() {
 
 	const formik = useFormik({
     initialValues: {
-			name: '',
-			type: '',
-      description: '',
-      validator_comments: '',
-			public: false,
+			name: test ? test['name'] : '',
+      description: test ? test['description'] : '',
+			conda_env: test ? test['conda_env'] : 'viper_vod',
+      validation_type: test ? test['validation_type'] : '',
+      validator_comments: test ? test['validator_comments'] : '',
+			public: test ? test['public'] : false,
     },
     onSubmit: (values) => {
       setSubmitted(true);
 			console.log(values)
-			// TODO: connect with backend API
-			// const res = await axios.post(YOUR_API_URL + 'auth/signin', values);
-
-			// if (res.data) {
-			// 	return res.data;
-			// }
+			values['required_capabilties'] = requiredCapabilties
+			values['supported_capabilties'] = supportedCapabilties
+			handleSubmit(values)
     },
     validationSchema: yup.object({
       name: yup.string().trim().required('Name is required'),
-      type: yup.string().trim().required('Validation type is required'),
       description: yup.string().trim().required('Description is required'),
+      conda_env: yup.string().trim(),
+      validation_type: yup.string().trim().required('Validation type is required'),
 			validator_comments: yup.string().trim().required('Validator comments is required'),
 			public: yup.boolean(),
     }),
@@ -85,25 +86,38 @@ export default function NewTestCodeForm() {
 							/>
 						</Grid>
 						<Grid item xs={3}>
-							<FormControl fullWidth size="small" required error={formik.touched.type && Boolean(formik.errors.type)}>
+							<FormControl fullWidth size="small" required error={formik.touched.validation_type && Boolean(formik.errors.validation_type)}>
 								<InputLabel id="select-validation-type-label">Validation Type</InputLabel>
 								<Select
 									labelId="select-validation-type"
 									id="select-validation-type"
 									label="Validation Type"
-									name="type"
+									name="validation_type"
 									disabled={submitted}
-									value={formik.values.type}
+									value={formik.values.validation_type}
 									onChange={formik.handleChange}
 								>
-									<MenuItem value={10}>Ten</MenuItem>
-									<MenuItem value={20}>Twenty</MenuItem>
-									<MenuItem value={30}>Thirty</MenuItem>
+									<MenuItem value={"drift"}>Data Drift</MenuItem>
+									<MenuItem value={"performance"}>Performance</MenuItem>
+									<MenuItem value={"fairness"}>Fairness</MenuItem>
 								</Select>
-								<FormHelperText>{formik.touched.type && formik.errors.type}</FormHelperText>
+								<FormHelperText>{formik.touched.validation_type && formik.errors.validation_type}</FormHelperText>
 							</FormControl>
 						</Grid>
-						<Grid item xs={6}></Grid>
+						<Grid item xs={3}>
+							<TextField 
+								fullWidth 
+								label="Conda ENV"
+								size="small"
+								name="conda_env"
+								disabled={submitted}
+								value={formik.values.conda_env}
+								onChange={formik.handleChange}
+								error={formik.touched.conda_env && Boolean(formik.errors.conda_env)}
+								helperText={formik.touched.conda_env && formik.errors.conda_env}
+							/>
+						</Grid>
+						<Grid item xs={3}></Grid>
 					</Grid>
 					<Grid container spacing={2} sx={{mt: 1}}>
 						<Grid item xs={6}>
@@ -162,14 +176,15 @@ export default function NewTestCodeForm() {
 								<Select
 									labelId="multiple-required-capability-label"
 									multiple
+									name='required_capabilties'
 									disabled={submitted}
 									value={requiredCapabilties}
 									onChange={handleChangeRequiredCapabilties}
 									input={<OutlinedInput label="Required Capabilties" />}
 								>
-									<MenuItem value={10}>Ten</MenuItem>
-									<MenuItem value={20}>Twenty</MenuItem>
-									<MenuItem value={30}>Thirty</MenuItem>
+									<MenuItem value={'HandleMissingValues'}>Handle Missing Values</MenuItem>
+									<MenuItem value={'Classification'}>Classification</MenuItem>
+									<MenuItem value={'Regression'}>Regression</MenuItem>
 								</Select>
 							</FormControl>
 						</Grid>
@@ -182,14 +197,15 @@ export default function NewTestCodeForm() {
 								<Select
 									labelId="multiple-support-capability-label"
 									multiple
+									name='supported_capabilties'
 									disabled={submitted}
 									value={supportedCapabilties}
 									onChange={handleChangeSupportedCapabilties}
 									input={<OutlinedInput label="Supported Capabilties" />}
 								>
-									<MenuItem value={10}>Ten</MenuItem>
-									<MenuItem value={20}>Twenty</MenuItem>
-									<MenuItem value={30}>Thirty</MenuItem>
+									<MenuItem value={'HandleMissingValues'}>Handle Missing Values</MenuItem>
+									<MenuItem value={'Classification'}>Classification</MenuItem>
+									<MenuItem value={'Regression'}>Regression</MenuItem>
 								</Select>
 							</FormControl>
 						</Grid>

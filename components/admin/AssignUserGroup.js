@@ -3,8 +3,9 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import GroupIcon from '@mui/icons-material/Group';
+import { update_doc } from '../../actions/firebase';
 
-export default function AssignUserGroup({group, groups}) {
+export default function AssignUserGroup({showMsg, user_id, group, groups}) {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -17,9 +18,11 @@ export default function AssignUserGroup({group, groups}) {
   };
 	
 	const [curGroup, setGroup] = useState(group);
-	const handleAssignGroup = (val) => {
+	const handleAssignGroup = async (val) => {
 		setGroup(val)
 		handleClose()
+		await update_doc("users", user_id, {"group": val})
+		showMsg(true)
 	}
 
 	useEffect(() => {
@@ -36,7 +39,7 @@ export default function AssignUserGroup({group, groups}) {
         onClick={handleClick}
       >
         {
-					curGroup ? curGroup : "No assignee"
+					curGroup ? curGroup : "No group"
 				}
       </Button>
       <Menu
@@ -45,8 +48,8 @@ export default function AssignUserGroup({group, groups}) {
         onClose={handleClose}
       >
 				{
-					groups.map((val, idx) => {
-						return <MenuItem key={idx} selected={curGroup === val} onClick={e => handleAssignGroup(val)}>{val}</MenuItem>
+					groups.map((group, idx) => {
+						return <MenuItem key={idx} selected={curGroup === group} onClick={e => handleAssignGroup(group)}>{group}</MenuItem>
 					})
 				}
       </Menu>

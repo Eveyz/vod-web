@@ -13,6 +13,7 @@ import ClippedDrawer from "../../../../components/ClippedDrawer"
 import { authOptions } from '../../../api/auth/[...nextauth]';
 import { GATEKEEPER } from '../../../../helper/constants';
 import GateKeeperMenu from '../../../../components/dashboard/GateKeeperMenu';
+import { get_groups } from '../../../../actions/firebase';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },

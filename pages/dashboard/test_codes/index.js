@@ -13,72 +13,114 @@ import ClippedDrawer from "../../../components/ClippedDrawer"
 import { authOptions } from '../../api/auth/[...nextauth]';
 import ValidatorMenu from '../../../components/dashboard/ValidatorMenu';
 import { VALIDATOR } from '../../../helper/constants';
+import { get_docs, delete_doc } from '../../../actions/firebase';
+import { useRouter } from 'next/router';
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  {
-    field: 'name',
-    headerName: 'Test Name',
-    width: 150,
-    editable: false,
-		sortable: false,
-  },
-  {
-    field: 'description',
-    headerName: 'Description',
-    sortable: false,
-    width: 300
-  },
-	{
-    field: "action",
-    headerName: "Action",
-		width: 150,
-		editable: false,
-    sortable: false,
-		disableSelectionOnClick: true,
-    renderCell: (params) => {
-      const onClick = (e) => {
-        e.stopPropagation(); // don't select this row after clicking
 
-        const api = params.api;
-        const thisRow = {};
+export default function TestCode({ tests, user }) {
 
-        api
-          .getAllColumns()
-          .filter((c) => c.field !== "__check__" && !!c)
-          .forEach(
-            (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
-          );
+	const router = useRouter()
 
-        return alert(JSON.stringify(thisRow, null, 4));
-      };
+	const deleteTest = async (id) => {
+		await delete_doc("test_codes", id)
+		router.push('/dashboard/test_codes')
+	}
 
-			return <>
-				<IconButton aria-label="edit" color="primary">
-					<EditIcon />
-				</IconButton>
-				<IconButton
-					aria-label="delete" 
-					color="error"
-					onClick={() => {
-						if(window.confirm('Are you sure to delete this record?')) { 
-							// deleteTest()
-						}
-					}}
-				>
-					<DeleteIcon />
-				</IconButton>
-				<Link href="/dashboard/test_codes/editor">
-					<IconButton aria-label="code">
-						<CodeIcon />
+	const columns = [
+		{ field: 'id', headerName: 'ID', width: 90 },
+		{
+			field: 'name',
+			headerName: 'Test Name',
+			width: 150,
+			editable: false,
+			sortable: false,
+		},
+		{
+			field: 'description',
+			headerName: 'Description',
+			sortable: false,
+			width: 200
+		},
+		{
+			field: 'module',
+			headerName: 'Module',
+			sortable: false,
+			width: 200
+		},
+		{
+			field: 'validator_comments',
+			headerName: 'Validator Comments',
+			sortable: false,
+			width: 200
+		},
+		{
+			field: 'validation_type',
+			headerName: 'Validation Type',
+			sortable: false,
+			width: 150
+		},
+		{
+			field: 'status',
+			headerName: 'Status',
+			sortable: false,
+			width: 150
+		},
+		{
+			field: 'public',
+			headerName: 'Public',
+			sortable: false,
+			width: 150
+		},
+		{
+			field: "action",
+			headerName: "Action",
+			width: 150,
+			editable: false,
+			sortable: false,
+			disableSelectionOnClick: true,
+			renderCell: (params) => {
+				const onClick = (e) => {
+					e.stopPropagation(); // don't select this row after clicking
+	
+					const api = params.api;
+					const thisRow = {};
+	
+					api
+						.getAllColumns()
+						.filter((c) => c.field !== "__check__" && !!c)
+						.forEach(
+							(c) => (thisRow[c.field] = params.getValue(params.id, c.field))
+						);
+	
+					return alert(JSON.stringify(thisRow, null, 4));
+				};
+	
+				return <>
+					<Link href={`/dashboard/test_codes/${params.id}/edit`}>
+						<IconButton aria-label="edit" color="primary">
+							<EditIcon />
+						</IconButton>
+					</Link>
+					<IconButton
+						aria-label="delete" 
+						color="error"
+						onClick={() => {
+							if(window.confirm('Are you sure to delete this record?')) { 
+								deleteTest(params.id)
+							}
+						}}
+					>
+						<DeleteIcon />
 					</IconButton>
-				</Link>
-			</>
-    }
-  },
-];
-
-export default function TestCode({ data, user }) {
+					<Link href={`/dashboard/test_codes/${params.id}/editor`}>
+						<IconButton aria-label="code">
+							<CodeIcon />
+						</IconButton>
+					</Link>
+				</>
+			}
+		},
+	];
 
 	return (
 		<ClippedDrawer sidebar={<ValidatorMenu selected={"test_codes"} />}>
@@ -90,11 +132,11 @@ export default function TestCode({ data, user }) {
 			<br/>
 			<br/>
 			{
-				data.length ?
+				tests.length ?
 				<>
 					<Box sx={{ height: 400, width: '100%' }}>
 						<DataGrid
-							rows={data}
+							rows={tests}
 							columns={columns}
 							pageSize={5}
 							rowsPerPageOptions={[5]}
@@ -107,7 +149,7 @@ export default function TestCode({ data, user }) {
 				:
 				<Card>
 					<CardContent>
-						<Typography variant="h5" gutterBottom>
+						<Typography variant="subtitle1">
 							No test codes found
 						</Typography>
 					</CardContent>
@@ -142,9 +184,10 @@ export async function getServerSideProps(context) {
 		{ id: 9, name: '14152', description: 'Harvey' },
 	];
 
+	const tests = await get_docs("test_codes")
 	const user = { id: session.user.id, role: session.user.role }
 
 	return {
-		props: { data, user }
+		props: { tests, user }
 	}
 }

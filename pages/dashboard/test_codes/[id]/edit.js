@@ -4,21 +4,20 @@ import Link from 'next/link';
 import { Box, Card, CardContent, Button, Typography, Snackbar, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, Breadcrumbs } from '@mui/material';
 import { unstable_getServerSession } from "next-auth/next"
 
-import ClippedDrawer from "../../../components/ClippedDrawer"
-import { authOptions } from '../../api/auth/[...nextauth]';
-import ValidatorMenu from '../../../components/dashboard/ValidatorMenu';
-import NewTestCodeForm from '../../../components/test_code/Form'
-import { VALIDATOR } from '../../../helper/constants';
-import { add_doc } from '../../../actions/firebase';
+import ClippedDrawer from "../../../../components/ClippedDrawer"
+import { authOptions } from '../../../api/auth/[...nextauth]';
+import ValidatorMenu from '../../../../components/dashboard/ValidatorMenu';
+import NewTestCodeForm from '../../../../components/test_code/Form'
+import { VALIDATOR } from '../../../../helper/constants';
 import { useRouter } from 'next/router';
+import { get_doc, update_doc } from '../../../../actions/firebase';
 
-export default function NewParameterizationTest() {
+export default function EditParameterizationTest({user, test, test_id}) {
 
 	const router = useRouter()
 
 	const handleSubmit = async (test) => {
-		test['status'] = 'pending'
-		await add_doc("test_codes", test)
+		await update_doc("test_codes", test_id, test)
 		router.push("/dashboard/test_codes")
 	}
 
@@ -29,7 +28,7 @@ export default function NewParameterizationTest() {
 				<Typography color="text.primary">New Test Code</Typography>
 			</Breadcrumbs>
 			<br/>
-			<NewTestCodeForm handleSubmit={handleSubmit} />
+			<NewTestCodeForm handleSubmit={handleSubmit} test={test} />
 		</ClippedDrawer>
 	)
 }
@@ -46,9 +45,12 @@ export async function getServerSideProps(context) {
 		}
 	}
 
+	// context.query.id => return route id
+	const test_id = context.query.id
 	const user = { id: session.user.id, role: session.user.role }
+	const test = await get_doc("test_codes", test_id)
 
 	return {
-		props: { user }
+		props: { user, test, test_id }
 	}
 }

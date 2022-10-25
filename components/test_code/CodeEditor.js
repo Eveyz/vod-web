@@ -1,7 +1,7 @@
 import Editor, { Monaco } from "@monaco-editor/react";
 import React, { useRef, useState, useEffect } from 'react'
 import { IconButton, Button, CircularProgress, Toolbar, Modal, Box, Typography, Tooltip } from '@mui/material'
-import { Replay, Refresh, DirectionsRun, Settings } from '@mui/icons-material'
+import { Replay, Refresh, DirectionsRun, Settings, Save } from '@mui/icons-material'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { LoadingButton } from '@mui/lab'
 
@@ -92,7 +92,7 @@ const style = {
   p: 4,
 };
 
-export default function CodeEditor({template}) {
+export default function CodeEditor({template, saveCode}) {
 
   const [isEditorReady, setIsEditorReady] = useState(false)
   const [runResult, setRunResult] = useState(null)
@@ -136,6 +136,11 @@ export default function CodeEditor({template}) {
   }
 
   const reset = () => {
+  }
+
+  const saveTestCode = () => {
+    setRunning(true)
+    saveCode(editorRef.current.getValue())
   }
 
   return (
@@ -202,9 +207,9 @@ export default function CodeEditor({template}) {
       <Button
         variant="contained"
         sx={{my: 1, ml: 2}}
-        onClick={runCode}
+        onClick={saveTestCode}
         disabled={!isEditorReady || running}
-        startIcon={<DirectionsRun />}
+        startIcon={<Save />}
       >
         Save
       </Button>

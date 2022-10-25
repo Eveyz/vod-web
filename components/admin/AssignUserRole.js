@@ -2,9 +2,14 @@ import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { Snackbar, Alert } from '@mui/material'
 import PersonIcon from '@mui/icons-material/Person';
+import { DEVELOPER, VALIDATOR, GATEKEEPER, ADMIN } from '../../helper/constants';
+import { update_doc } from '../../actions/firebase';
 
-export default function AssignUserRole({role, roles}) {
+const roles = [DEVELOPER, VALIDATOR, GATEKEEPER, ADMIN]
+
+export default function AssignUserRole({user_id, role, showMsg}) {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -17,9 +22,12 @@ export default function AssignUserRole({role, roles}) {
   };
 	
 	const [curRole, setRole] = useState(role);
-	const handleAssignRole = (val) => {
+
+	const handleAssignRole = async (val) => {
 		setRole(val)
 		handleClose()
+		await update_doc("users", user_id, {"role": val})
+		showMsg(true)
 	}
 
 	useEffect(() => {

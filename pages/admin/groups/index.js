@@ -4,12 +4,11 @@ import { Box, Typography, Card, CardContent, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { unstable_getServerSession } from "next-auth/next"
 
-import { ADMIN, DEVELOPER, GATEKEEPER, VALIDATOR } from '../../../helper/constants';
+import { ADMIN } from '../../../helper/constants';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import ClippedDrawer from '../../../components/ClippedDrawer';
 import AdminMenu from '../../../components/dashboard/AdminMenu';
-import AssignUserRole from '../../../components/admin/AssignUserRole';
-import AssignUserGroup from '../../../components/admin/AssignUserGroup';
+import { get_docs } from '../../../actions/firebase';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -33,7 +32,7 @@ const columns = [
 	},
 ];
 
-export default function AdminGroups({data, user}) {
+export default function AdminGroups({groups, user}) {
   return (
 		<ClippedDrawer sidebar={<AdminMenu selected={"groups"} />}>
 			<Typography variant="h5" component="div">
@@ -44,11 +43,11 @@ export default function AdminGroups({data, user}) {
 			</Link>
 			<br/>
 			{
-				data.length ?
+				groups.length ?
 				<>
 					<Box sx={{ height: 400, width: '100%' }}>
 						<DataGrid
-							rows={data}
+							rows={groups}
 							columns={columns}
 							pageSize={5}
 							rowsPerPageOptions={[5]}
@@ -60,7 +59,7 @@ export default function AdminGroups({data, user}) {
 				:
 				<Card>
 					<CardContent>
-						<Typography variant="h5" gutterBottom>
+						<Typography variant="subtitle1">
 							No groups found
 						</Typography>
 					</CardContent>
@@ -94,9 +93,10 @@ export async function getServerSideProps(context) {
 		{ id: 9, name: 'Roxie', description: 'Harvey', members: 4 },
 	];
 
+	const groups = await get_docs("groups")
 	const user = { id: session.user.id, role: session.user.role }
 
 	return {
-		props: { data, user }
+		props: { groups, user }
 	}
 }

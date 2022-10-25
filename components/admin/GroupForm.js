@@ -8,24 +8,19 @@ import { LoadingButton } from '@mui/lab'
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
-export default function GroupForm() {
+export default function GroupForm({handleSubmit, group}) {
 
 	const [submitted, setSubmitted] = useState(false);
 
 	const formik = useFormik({
     initialValues: {
-			name: '',
-      description: '',
+			name: group ? group['name'] : '',
+      description: group ? group['description'] : '',
     },
     onSubmit: (values) => {
       setSubmitted(true);
 			console.log(values)
-			// TODO: connect with backend API
-			// const res = await axios.post(YOUR_API_URL + 'auth/signin', values);
-
-			// if (res.data) {
-			// 	return res.data;
-			// }
+			handleSubmit(values)
     },
     validationSchema: yup.object({
       name: yup.string().trim().required('Name is required'),
