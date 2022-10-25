@@ -12,12 +12,13 @@ import { VALIDATOR } from '../../../helper/constants';
 import { add_doc } from '../../../actions/firebase';
 import { useRouter } from 'next/router';
 
-export default function NewParameterizationTest() {
+export default function NewParameterizationTest({user}) {
 
 	const router = useRouter()
 
 	const handleSubmit = async (test) => {
 		test['status'] = 'pending'
+		test['user_id'] = user.id
 		await add_doc("test_codes", test)
 		router.push("/dashboard/test_codes")
 	}
