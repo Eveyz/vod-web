@@ -139,7 +139,7 @@ export const authOptions = {
 
 				// user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: GATEKEEPER }
 
-				// user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: ADMIN }
+				user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: ADMIN }
 
 				return user
 				// The object returned (user in this case), will be passed to the jwt callback.
