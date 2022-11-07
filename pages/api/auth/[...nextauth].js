@@ -142,11 +142,11 @@ export const authOptions = {
 				// Return null if user data could not be retrieved
 				let user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: VALIDATOR }
 
-				// user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: GATEKEEPER }
+				user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: GATEKEEPER }
 
 				// user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: VALIDATOR_MANAGER }
 
-				// user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: ADMIN }
+				user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: ADMIN }
 
 				return user
 				// The object returned (user in this case), will be passed to the jwt callback.

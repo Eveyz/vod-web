@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Layout from '../components/layout'
 import { unstable_getServerSession } from 'next-auth'
-import { ADMIN, VALIDATOR, DEVELOPER, GATEKEEPER } from '../helper/constants'
+import { ADMIN, VALIDATOR, DEVELOPER, GATEKEEPER, VALIDATOR_MANAGER } from '../helper/constants'
 import { authOptions } from './api/auth/[...nextauth]'
 
 export default function Dispatcher() {
@@ -24,7 +24,9 @@ export async function getServerSideProps(context) {
       url = '/dashboard/test_codes'
     } else if(session.user.role === DEVELOPER) {
       url = '/dashboard/models'
-    } else if(session.user.role === GATEKEEPER) {
+    } else if(session.user.role === VALIDATOR_MANAGER) {
+			url = '/dashboard/manager/test_codes'
+		} else if(session.user.role === GATEKEEPER) {
 			url = '/dashboard/gatekeeper/test_codes'
 		} else {
 			// Firstly signup

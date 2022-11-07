@@ -15,7 +15,7 @@ const code = `\nimport dsai\n\nclass DSAITest():\n
 
 export default function ViewTestCode({ data, test, user, goBack }) {
 
-	const publicTest = () => {
+	const signOffTest = () => {
 
 	}
 
@@ -55,11 +55,11 @@ export default function ViewTestCode({ data, test, user, goBack }) {
 						sx={{mt: 1}} 
 						variant='contained' 
 						onClick={() => {
-							if(window.confirm('Are you sure to make this test visible to all?')) { 
-								publicTest()
+							if(window.confirm('Are you sure to sign off this test?')) { 
+								signOffTest()
 							}
 						}}
-					>Make Public</Button>
+					>Sign off</Button>
 				</CardContent>
 			</Card>
 		</div>

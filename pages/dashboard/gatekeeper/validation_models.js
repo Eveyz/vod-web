@@ -11,67 +11,68 @@ import ClippedDrawer from "../../../components/ClippedDrawer"
 import { authOptions } from '../../api/auth/[...nextauth]';
 import { GATEKEEPER } from '../../../helper/constants';
 import GateKeeperMenu from '../../../components/dashboard/GateKeeperMenu';
-import AssignValidator from '../../../components/gatekeeper/AssignValidator';
+import AssignManager from '../../../components/gatekeeper/AssignManager';
 
-const columns = [
-  {
-    field: 'modelID',
-    headerName: 'Model ID',
-    width: 150,
-    editable: false,
-		sortable: false,
-  },
-  {
-    field: 'modelName',
-    headerName: 'Model name',
-    width: 150,
-    editable: false,
-		sortable: false,
-  },
-  {
-    field: 'description',
-    headerName: 'Description',
-    sortable: false,
-    width: 160
-  },
-	{
-    field: 'validator',
-    headerName: 'Validator',
-    width: 200,
-    editable: false,
-		sortable: false,
-  },
-	{
-    field: "action",
-    headerName: "Action",
-		width: 260,
-		editable: false,
-    sortable: false,
-		disableSelectionOnClick: true,
-    renderCell: (params) => {
-      const onClick = (e) => {
-        e.stopPropagation(); // don't select this row after clicking
 
-        const api = params.api;
-        const thisRow = {};
+export default function ValidationModels({ data, user, managers }) {
 
-        api
-          .getAllColumns()
-          .filter((c) => c.field !== "__check__" && !!c)
-          .forEach(
-            (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
-          );
-
-        return alert(JSON.stringify(thisRow, null, 4));
-      };
-
-			return <AssignValidator validator={params.row.validator} validators={params.row.validators} />
-    }
-  },
-];
-
-export default function ValidationModels({ data, user }) {
-
+	const columns = [
+		{
+			field: 'modelID',
+			headerName: 'Model ID',
+			width: 150,
+			editable: false,
+			sortable: false,
+		},
+		{
+			field: 'modelName',
+			headerName: 'Model name',
+			width: 150,
+			editable: false,
+			sortable: false,
+		},
+		{
+			field: 'description',
+			headerName: 'Description',
+			sortable: false,
+			width: 160
+		},
+		{
+			field: 'manager',
+			headerName: 'Manager',
+			width: 200,
+			editable: false,
+			sortable: false,
+		},
+		{
+			field: "action",
+			headerName: "Action",
+			width: 260,
+			editable: false,
+			sortable: false,
+			disableSelectionOnClick: true,
+			renderCell: (params) => {
+				const onClick = (e) => {
+					e.stopPropagation(); // don't select this row after clicking
+	
+					const api = params.api;
+					const thisRow = {};
+	
+					api
+						.getAllColumns()
+						.filter((c) => c.field !== "__check__" && !!c)
+						.forEach(
+							(c) => (thisRow[c.field] = params.getValue(params.id, c.field))
+						);
+	
+					return alert(JSON.stringify(thisRow, null, 4));
+				};
+	
+				return <AssignManager manager={params.row.manager} managers={managers} />
+			}
+		},
+	];
+	
 	return (
 		<ClippedDrawer sidebar={<GateKeeperMenu selected={"validation_models"} />}>
 			<Typography variant="h5" component="div">
@@ -117,20 +118,22 @@ export async function getServerSideProps(context) {
 	}
 
 	const data = [
-		{ id: 1, modelID: '14144', modelName: 'Jon', validator: 'Jon', validators: ['Jon', 'Jaime', 'Arya'] },
-		{ id: 2, modelID: '14145', modelName: 'Cersei', validator: null, validators: ['Jon', 'Jaime', 'Arya'] },
-		{ id: 3, modelID: '14146', modelName: 'Jaime', validator: 'Jaime', validators: ['Jon', 'Jaime', 'Arya'] },
-		{ id: 4, modelID: '14147', modelName: 'Arya', validator: 'Arya', validators: ['Jon', 'Jaime', 'Arya'] },
-		{ id: 5, modelID: '14148', modelName: 'Daenerys', validator: 'Daenerys', validators: ['Jon', 'Jaime', 'Arya'] },
-		{ id: 6, modelID: '14149', modelName: null, validator: null, validators: ['Jon', 'Jaime', 'Arya'] },
-		{ id: 7, modelID: '14150', modelName: 'Ferrara', validator: 'Ferrara', validators: ['Jon', 'Jaime', 'Arya'] },
-		{ id: 8, modelID: '14151', modelName: 'Rossini', validator: 'Rossini', validators: ['Jon', 'Jaime', 'Arya'] },
-		{ id: 9, modelID: '14152', modelName: 'Harvey', validator: 'Harvey', validators: ['Jon', 'Jaime', 'Arya'] },
+		{ id: 1, modelID: '14144', modelName: 'Jon', manager: 'Jon' },
+		{ id: 2, modelID: '14145', modelName: 'Cersei', manager: null },
+		{ id: 3, modelID: '14146', modelName: 'Jaime', manager: 'Jaime' },
+		{ id: 4, modelID: '14147', modelName: 'Arya', manager: 'Arya' },
+		{ id: 5, modelID: '14148', modelName: 'Daenerys', manager: 'Daenerys' },
+		{ id: 6, modelID: '14149', modelName: null, manager: null },
+		{ id: 7, modelID: '14150', modelName: 'Ferrara', manager: 'Ferrara' },
+		{ id: 8, modelID: '14151', modelName: 'Rossini', manager: 'Rossini' },
+		{ id: 9, modelID: '14152', modelName: 'Harvey', manager: 'Harvey'  },
 	];
+
+	const managers = ['Jon', 'Jaime', 'Arya']
 
 	const user = { id: session.user.id, role: session.user.role }
 
 	return {
-		props: { data, user }
+		props: { data, user, managers }
 	}
 }

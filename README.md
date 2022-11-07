@@ -48,3 +48,36 @@ Validation Tasks
 4. /dashboard/validation_tasks/id/edit_validation_suite (edit_validation_suite.js): Implement getValidationSuite function in actions/validation_suite to query validation_suite by id. Check detailed data structure in actions/validation_suite. 
 
 5. /dashboard/validation_tasks/id/edit_validation_suite (edit_validation_suite.js): Implement updateValidationSuite function in actions/validation_suite to update validation_suite.
+
+Validator Manager Dashboard
+1. /dashboard/manager/validation_models: Implement get validators functions belongs to validator manager.
+
+2. /dashboard/manager/validation_models: Implement get models functions belongs to validator manager.
+
+3. /dashboard/manager/validation_models: Implement assign models to a validator, under the hood, this action will update a validation task with validator id (such validation task should be created by gatekeeper).
+
+4. /dashboard/manager/test_codes: Implement get test codes from managed validators (through his managed validators). 
+
+5. /dashboard/manager/test_codes: Implement sign off test code action for managed validators.
+
+
+GateKeeper Dashboard
+1. /dashboard/gatekeeper/validation_models: Implement get models functions belongs to current group.
+
+2. /dashboard/gatekeeper/validation_models: Implement assign models to a manager, under the hood, this action will create a validation task with assigned manager id and model id.
+
+4. /dashboard/gatekeeper/test_codes: Implement get test codes from group. 
+
+5. /dashboard/gatekeeper/test_codes: Implement make test code public to all action.
+
+
+Admin
+1. /admin/users: Get all users
+
+2. /admin/users: Assign a user to a role
+
+3. /admin/users: Assign a user to a group
+
+4. /admin/test_codes: Get all test codes (view only for now)
+
+5. /admin/groups: Create new group
