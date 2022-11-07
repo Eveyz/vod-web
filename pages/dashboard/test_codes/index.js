@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link';
 
-import { Box, Card, CardContent, Button, Typography, Snackbar, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton } from '@mui/material';
+import { Box, Card, CardContent, Button, Typography, Snackbar, List, Divider, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CodeIcon from '@mui/icons-material/Code';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import { DataGrid } from "@mui/x-data-grid";
 import { unstable_getServerSession } from "next-auth/next"
 
@@ -13,7 +14,7 @@ import ClippedDrawer from "../../../components/ClippedDrawer"
 import { authOptions } from '../../api/auth/[...nextauth]';
 import ValidatorMenu from '../../../components/dashboard/ValidatorMenu';
 import { VALIDATOR } from '../../../helper/constants';
-import { get_docs, delete_doc } from '../../../actions/firebase';
+import { get_docs, delete_doc, add_doc } from '../../../actions/firebase';
 import { useRouter } from 'next/router';
 
 
@@ -23,6 +24,17 @@ export default function TestCode({ tests, user }) {
 
 	const deleteTest = async (id) => {
 		await delete_doc("test_codes", id)
+		router.push('/dashboard/test_codes')
+	}
+
+	const copyTestCode = async (test) => {
+		delete test.id
+		test['status'] = 'pending'
+		test['user_id'] = user.id
+		test['created_at'] = new Date().getTime()
+		test['updated_at'] = new Date().getTime()
+		console.log(test)
+		await add_doc("test_codes", test)
 		router.push('/dashboard/test_codes')
 	}
 
@@ -48,12 +60,6 @@ export default function TestCode({ tests, user }) {
 			width: 200
 		},
 		{
-			field: 'validator_comments',
-			headerName: 'Validator Comments',
-			sortable: false,
-			width: 200
-		},
-		{
 			field: 'validation_type',
 			headerName: 'Validation Type',
 			sortable: false,
@@ -66,15 +72,9 @@ export default function TestCode({ tests, user }) {
 			width: 150
 		},
 		{
-			field: 'public',
-			headerName: 'Public',
-			sortable: false,
-			width: 150
-		},
-		{
 			field: "action",
 			headerName: "Action",
-			width: 150,
+			width: 200,
 			editable: false,
 			sortable: false,
 			disableSelectionOnClick: true,
@@ -97,26 +97,41 @@ export default function TestCode({ tests, user }) {
 	
 				return <>
 					<Link href={`/dashboard/test_codes/${params.id}/edit`}>
-						<IconButton aria-label="edit" color="primary">
-							<EditIcon />
-						</IconButton>
+						<Tooltip title="Edit">
+							<IconButton aria-label="edit" color="primary">
+								<EditIcon />
+							</IconButton>
+						</Tooltip>
 					</Link>
-					<IconButton
-						aria-label="delete" 
-						color="error"
-						onClick={() => {
-							if(window.confirm('Are you sure to delete this record?')) { 
-								deleteTest(params.id)
-							}
-						}}
-					>
-						<DeleteIcon />
-					</IconButton>
+					<Tooltip title="Copy">
+						<IconButton
+							aria-label="copy" 
+							color="info"
+							onClick={() => copyTestCode(params.row)}
+						>
+							<ContentPasteIcon />
+						</IconButton>
+					</Tooltip>
 					<Link href={`/dashboard/test_codes/${params.id}/editor`}>
-						<IconButton aria-label="code">
-							<CodeIcon />
-						</IconButton>
+						<Tooltip title="Code">
+							<IconButton aria-label="code">
+								<CodeIcon />
+							</IconButton>
+						</Tooltip>
 					</Link>
+					<Tooltip title="Delete">
+						<IconButton
+							aria-label="delete" 
+							color="error"
+							onClick={() => {
+								if(window.confirm('Are you sure to delete this record?')) { 
+									deleteTest(params.id)
+								}
+							}}
+						>
+							<DeleteIcon />
+						</IconButton>
+					</Tooltip>
 				</>
 			}
 		},
@@ -126,7 +141,7 @@ export default function TestCode({ tests, user }) {
 		<ClippedDrawer sidebar={<ValidatorMenu selected={"test_codes"} />}>
 			<Link href="/dashboard/test_codes/new">
 				<Button variant="contained" startIcon={<AddIcon />}>
-					New Test Codes
+					New Test Code
 				</Button>
 			</Link>
 			<br/>

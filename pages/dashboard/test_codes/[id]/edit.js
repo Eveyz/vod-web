@@ -17,6 +17,7 @@ export default function EditParameterizationTest({user, test, test_id}) {
 	const router = useRouter()
 
 	const handleSubmit = async (test) => {
+		test['updated_at'] = new Date().getTime()
 		await update_doc("test_codes", test_id, test)
 		router.push("/dashboard/test_codes")
 	}

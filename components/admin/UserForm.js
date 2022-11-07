@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { Box, Card, CardContent, Button, Typography, TextField, Checkbox, FormGroup, FormControlLabel, FormControl, InputLabel, Select, MenuItem, Grid, Stack, FormHelperText, OutlinedInput } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { LoadingButton } from '@mui/lab'
-import { DEVELOPER, VALIDATOR, GATEKEEPER, ADMIN } from '../../helper/constants';
+import { DEVELOPER, VALIDATOR, GATEKEEPER, ADMIN, VALIDATOR_MANAGER } from '../../helper/constants';
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
@@ -101,6 +101,7 @@ export default function UserForm({handleSubmit, user}) {
 								>
 									<MenuItem value={DEVELOPER}>Developer</MenuItem>
 									<MenuItem value={VALIDATOR}>Validator</MenuItem>
+									<MenuItem value={VALIDATOR_MANAGER}>Validator Manager</MenuItem>
 									<MenuItem value={GATEKEEPER}>Gatekeeper</MenuItem>
 									<MenuItem value={ADMIN}>Admin</MenuItem>
 								</Select>

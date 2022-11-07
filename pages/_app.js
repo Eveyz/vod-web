@@ -1,5 +1,6 @@
-import { SessionProvider } from 'next-auth/react'
 import { useState } from 'react'
+import { SessionProvider } from 'next-auth/react'
+import { GlobalDataProvider } from '../helper/GlobalDataContext'
 import RefreshTokenHandler from '../helper/refreshTokenHandler'
 import '../styles/globals.css'
 
@@ -11,7 +12,9 @@ function MyApp({
 
   return (
     <SessionProvider session={session} refetchInterval={interval}>
-      <Component {...pageProps} />
+      <GlobalDataProvider>
+        <Component {...pageProps} />
+      </GlobalDataProvider>
       <RefreshTokenHandler setInterval={setInterval} />
     </SessionProvider>
   )

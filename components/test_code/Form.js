@@ -7,6 +7,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import { LoadingButton } from '@mui/lab'
 
 import SelectTestCode from './SelectTestCode'
+import CapabilityForm from '../CapabilityForm'
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
@@ -16,8 +17,9 @@ export default function NewTestCodeForm({handleSubmit, test}) {
 
 	const [submitted, setSubmitted] = useState(false);
 
-	const [requiredCapabilties, setRequiredCapabilties] = useState(test ? test['required_capabilties'] : []);
-	const [supportedCapabilties, setSupportedCapabilties] = useState(test ? test['supported_capabilties'] : []);
+	const [capabilities, setCapabilties] = useState(test ? test['capabilities'] : []);
+	// const [requiredCapabilties, setRequiredCapabilties] = useState(test ? test['required_capabilties'] : []);
+	// const [supportedCapabilties, setSupportedCapabilties] = useState(test ? test['supported_capabilties'] : []);
 
   const handleChangeSupportedCapabilties = (event) => {
     const {
@@ -37,28 +39,36 @@ export default function NewTestCodeForm({handleSubmit, test}) {
     );
   };
 
+	const getValue = (values) => {
+		setCapabilties(values)
+	}
+
 	const formik = useFormik({
     initialValues: {
 			name: test ? test['name'] : '',
       description: test ? test['description'] : '',
 			conda_env: test ? test['conda_env'] : 'viper_vod',
+			module: test && test['module'] ? test['module'] : '',
       validation_type: test ? test['validation_type'] : '',
-      validator_comments: test ? test['validator_comments'] : '',
+      // validator_comments: test ? test['validator_comments'] : '',
 			public: test ? test['public'] : false,
     },
     onSubmit: (values) => {
       setSubmitted(true);
 			console.log(values)
-			values['required_capabilties'] = requiredCapabilties
-			values['supported_capabilties'] = supportedCapabilties
+			values['capabilities'] = capabilities
+			console.log(values)
+			// values['required_capabilties'] = requiredCapabilties
+			// values['supported_capabilties'] = supportedCapabilties
 			handleSubmit(values)
     },
     validationSchema: yup.object({
       name: yup.string().trim().required('Name is required'),
       description: yup.string().trim().required('Description is required'),
+      module: yup.string().trim(),
       conda_env: yup.string().trim(),
       validation_type: yup.string().trim().required('Validation type is required'),
-			validator_comments: yup.string().trim().required('Validator comments is required'),
+			// validator_comments: yup.string().trim().required('Validator comments is required'),
 			public: yup.boolean(),
     }),
   });
@@ -104,6 +114,9 @@ export default function NewTestCodeForm({handleSubmit, test}) {
 								<FormHelperText>{formik.touched.validation_type && formik.errors.validation_type}</FormHelperText>
 							</FormControl>
 						</Grid>
+						<Grid item xs={6}></Grid>
+					</Grid>
+					<Grid container spacing={2} sx={{mt: 1}}>
 						<Grid item xs={3}>
 							<TextField 
 								fullWidth 
@@ -117,7 +130,20 @@ export default function NewTestCodeForm({handleSubmit, test}) {
 								helperText={formik.touched.conda_env && formik.errors.conda_env}
 							/>
 						</Grid>
-						<Grid item xs={3}></Grid>
+						<Grid item xs={3}>
+							<TextField 
+								fullWidth 
+								label="Module"
+								size="small"
+								name="module"
+								disabled={submitted}
+								value={formik.values.module}
+								onChange={formik.handleChange}
+								error={formik.touched.module && Boolean(formik.errors.module)}
+								helperText={formik.touched.module && formik.errors.module}
+							/>
+						</Grid>
+						<Grid item xs={6}></Grid>
 					</Grid>
 					<Grid container spacing={2} sx={{mt: 1}}>
 						<Grid item xs={6}>
@@ -136,22 +162,6 @@ export default function NewTestCodeForm({handleSubmit, test}) {
 								rows={3}
 							/>
 						</Grid>
-						<Grid item xs={6}>
-							<TextField
-								fullWidth
-								required
-								disabled={submitted}
-								id="outlined-multiline-flexible"
-								label="Validator Comments"
-								name="validator_comments"
-								value={formik.values.validator_comments}
-								onChange={formik.handleChange}
-								error={formik.touched.validator_comments && Boolean(formik.errors.validator_comments)}
-								helperText={formik.touched.validator_comments && formik.errors.validator_comments}
-								multiline
-								rows={3}
-							/>
-						</Grid>
 					</Grid>
 					<Grid container spacing={2}>
 						<Grid item xs={6}>
@@ -166,7 +176,8 @@ export default function NewTestCodeForm({handleSubmit, test}) {
 							</FormGroup>
 						</Grid>
 					</Grid>
-					<Grid container spacing={2}>
+					<CapabilityForm getValue={getValue} capabilities={capabilities} type="test_code" />
+					{/* <Grid container spacing={2}>
 						<Grid item xs={6}>
 							<Typography variant="h6" gutterBottom sx={{mt: 1}}>
 								Required Capabilties
@@ -209,7 +220,7 @@ export default function NewTestCodeForm({handleSubmit, test}) {
 								</Select>
 							</FormControl>
 						</Grid>
-					</Grid>
+					</Grid> */}
 					<LoadingButton
 						loading={submitted}
 						loadingPosition="start"

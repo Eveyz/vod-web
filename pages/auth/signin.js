@@ -2,6 +2,7 @@ import Layout from "../../components/layout"
 import { Grid, TextField, Card, CardContent, Typography, Button } from '@mui/material'
 import { useState } from "react"
 import { signIn } from 'next-auth/react'
+import { SIGNIN } from "../../helper/constants"
 
 export default function Signin() {
 
@@ -10,7 +11,7 @@ export default function Signin() {
   const [msg, setMsg] = useState('')
 
   const submit = () => {
-		signIn('credentials', { username: username, password: password, callbackUrl: '/dispatcher' })
+		signIn('credentials', { username: username, password: password, action: SIGNIN, callbackUrl: '/dispatcher' })
   }
 
 	return (

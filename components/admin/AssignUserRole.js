@@ -4,10 +4,18 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Snackbar, Alert } from '@mui/material'
 import PersonIcon from '@mui/icons-material/Person';
-import { DEVELOPER, VALIDATOR, GATEKEEPER, ADMIN } from '../../helper/constants';
+import { DEVELOPER, VALIDATOR, GATEKEEPER, ADMIN, VALIDATOR_MANAGER } from '../../helper/constants';
 import { update_doc } from '../../actions/firebase';
 
-const roles = [DEVELOPER, VALIDATOR, GATEKEEPER, ADMIN]
+const roles = [DEVELOPER, VALIDATOR, VALIDATOR_MANAGER, GATEKEEPER, ADMIN]
+
+const role_displays = {
+	[DEVELOPER]: 'Developer',
+	[VALIDATOR]: 'Validator',
+	[VALIDATOR_MANAGER]: 'Manager',
+	[GATEKEEPER]: 'GateKeeper',
+	[ADMIN]: 'Admin',
+}
 
 export default function AssignUserRole({user_id, role, showMsg}) {
 
@@ -44,7 +52,7 @@ export default function AssignUserRole({user_id, role, showMsg}) {
         onClick={handleClick}
       >
         {
-					curRole ? curRole : "No assignee"
+					curRole ? role_displays[curRole] : "No assignee"
 				}
       </Button>
       <Menu
@@ -53,8 +61,8 @@ export default function AssignUserRole({user_id, role, showMsg}) {
         onClose={handleClose}
       >
 				{
-					roles.map((val, idx) => {
-						return <MenuItem key={idx} selected={curRole === val} onClick={e => handleAssignRole(val)}>{val}</MenuItem>
+					roles.map((role, idx) => {
+						return <MenuItem key={idx} selected={curRole === role} onClick={e => handleAssignRole(role)}>{role_displays[role]}</MenuItem>
 					})
 				}
       </Menu>

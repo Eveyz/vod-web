@@ -32,3 +32,19 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## TODO
+
+Auth
+1. [...nextauth].js: signin and signup functions in authorize
+
+Validation Tasks
+1. /dashboard/validation_tasks (index.js): Replace get current validator all validation tasks with getValidationTasks function in actions/validation_task
+
+2. /dashboard/validation_tasks/id/add_validation_suite (add_validation_suite.js): Implement getTestCodes function in actions/test_code to search test codes. Return test codes with params if the plugin's validate function specify a set of params. Check detailed data structure in actions/test_code.
+
+3. /dashboard/validation_tasks/id/add_validation_suite (add_validation_suite.js): Implement addValidationSuite function in actions/test_code to search test codes.
+
+4. /dashboard/validation_tasks/id/edit_validation_suite (edit_validation_suite.js): Implement getValidationSuite function in actions/validation_suite to query validation_suite by id. Check detailed data structure in actions/validation_suite. 
+
+5. /dashboard/validation_tasks/id/edit_validation_suite (edit_validation_suite.js): Implement updateValidationSuite function in actions/validation_suite to update validation_suite.

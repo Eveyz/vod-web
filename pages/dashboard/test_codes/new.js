@@ -19,6 +19,8 @@ export default function NewParameterizationTest({user}) {
 	const handleSubmit = async (test) => {
 		test['status'] = 'pending'
 		test['user_id'] = user.id
+		test['created_at'] = new Date().getTime()
+		test['updated_at'] = new Date().getTime()
 		await add_doc("test_codes", test)
 		router.push("/dashboard/test_codes")
 	}

@@ -4,7 +4,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { unstable_getServerSession } from "next-auth/next"
 import Link from 'next/link';
 
-import { ADMIN, DEVELOPER, GATEKEEPER, VALIDATOR } from '../../../helper/constants';
+import { ADMIN, DEVELOPER, GATEKEEPER, VALIDATOR, VALIDATOR_MANAGER } from '../../../helper/constants';
 import { authOptions } from '../../api/auth/[...nextauth]';
 import ClippedDrawer from '../../../components/ClippedDrawer';
 import AdminMenu from '../../../components/dashboard/AdminMenu';
@@ -144,7 +144,7 @@ export async function getServerSideProps(context) {
 		}
 	}
 
-	const roles = [ADMIN, VALIDATOR, DEVELOPER, GATEKEEPER]
+	const roles = [ADMIN, VALIDATOR, VALIDATOR_MANAGER, DEVELOPER, GATEKEEPER]
 	const groups_ = ["DSAI", "PiML"]
 
 	const users_ = [

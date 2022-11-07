@@ -11,77 +11,95 @@ import ClippedDrawer from "../../../components/ClippedDrawer"
 import { authOptions } from '../../api/auth/[...nextauth]';
 import ValidatorMenu from '../../../components/dashboard/ValidatorMenu';
 import { VALIDATOR } from '../../../helper/constants';
+import { useGlobalDataContext } from '../../../helper/GlobalDataContext';
+import { useRouter } from 'next/router';
+import { get_docs, get_doc } from '../../../actions/firebase';
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  {
-    field: 'modelID',
-    headerName: 'Model ID',
-    width: 150,
-    editable: false,
-		sortable: false,
-  },
-  {
-    field: 'modelName',
-    headerName: 'Model name',
-    width: 150,
-    editable: false,
-		sortable: false,
-  },
-  {
-    field: 'description',
-    headerName: 'Description',
-    sortable: false,
-    width: 160
-  },
-	{
-    field: 'validationSuite',
-    headerName: 'Validation Suite ID',
-    width: 200,
-    editable: false,
-		sortable: false,
-  },
-	{
-    field: "action",
-    headerName: "Action",
-		width: 260,
-		editable: false,
-    sortable: false,
-		disableSelectionOnClick: true,
-    renderCell: (params) => {
-      const onClick = (e) => {
-        e.stopPropagation(); // don't select this row after clicking
 
-        const api = params.api;
-        const thisRow = {};
+export default function ValidationTasks({ validation_tasks, user }) {
 
-        api
-          .getAllColumns()
-          .filter((c) => c.field !== "__check__" && !!c)
-          .forEach(
-            (c) => (thisRow[c.field] = params.getValue(params.id, c.field))
-          );
+	const { setModel, setValidationSuiteID } = useGlobalDataContext()
+	const router = useRouter()
 
-        return alert(JSON.stringify(thisRow, null, 4));
-      };
+	const addValidationSuite = (m) => {
+		setModel(m)
+		router.push(`/dashboard/validation_tasks/${m.id}/add_validation_suite`)
+	}
 
-			if(params.row.validationSuite) {
-				return <Link href={`/dashboard/validation_tasks/${params.id}/edit_validation_suite`}><Button variant="outlined" startIcon={<EditIcon />}>Validation Suite</Button></Link>
+	const editValidationSuite = (m) => {
+		setModel(m)
+		setValidationSuiteID(m.validation_suite_id)
+		router.push(`/dashboard/validation_tasks/${m.id}/edit_validation_suite`)
+	}
+
+	const columns = [
+		{ field: 'id', headerName: 'ID', width: 90 },
+		{
+			field: 'model_id',
+			headerName: 'Model ID',
+			width: 150,
+			editable: false,
+			sortable: false,
+		},
+		{
+			field: 'model_name',
+			headerName: 'Model Name',
+			width: 150,
+			editable: false,
+			sortable: false,
+		},
+		{
+			field: 'model_description',
+			headerName: 'Model Description',
+			sortable: false,
+			width: 160
+		},
+		{
+			field: 'validation_suite_id',
+			headerName: 'Validation Suite ID',
+			width: 200,
+			editable: false,
+			sortable: false,
+		},
+		{
+			field: "action",
+			headerName: "Action",
+			width: 260,
+			editable: false,
+			sortable: false,
+			disableSelectionOnClick: true,
+			renderCell: (params) => {
+				const onClick = (e) => {
+					e.stopPropagation(); // don't select this row after clicking
+	
+					const api = params.api;
+					const thisRow = {};
+	
+					api
+						.getAllColumns()
+						.filter((c) => c.field !== "__check__" && !!c)
+						.forEach(
+							(c) => (thisRow[c.field] = params.getValue(params.id, c.field))
+						);
+	
+					return alert(JSON.stringify(thisRow, null, 4));
+				};
+	
+				if(params.row.validation_suite_id) {
+					return <Button variant="outlined" startIcon={<EditIcon />} onClick={() => editValidationSuite(params.row)}>Validation Suite</Button>
+				}
+				return <Button variant="outlined" startIcon={<AddIcon />} onClick={() => addValidationSuite(params.row)}>Validation Suite</Button>
 			}
-			return <Link href={`/dashboard/validation_tasks/${params.id}/add_validation_suite`}><Button variant="outlined" startIcon={<AddIcon />}>Validation Suite</Button></Link>
-    }
-  },
-];
-
-export default function ValidationTasks({ data, user }) {
+		},
+	];
 
 	return (
 		<ClippedDrawer sidebar={<ValidatorMenu selected={"validation_tasks"} />}>
 			{
-				data.length ?
+				validation_tasks.length ?
 				<Box sx={{ height: 400, width: '100%' }}>
 					<DataGrid
-						rows={data}
+						rows={validation_tasks}
 						columns={columns}
 						pageSize={5}
 						rowsPerPageOptions={[5]}
@@ -116,21 +134,20 @@ export async function getServerSideProps(context) {
 		}
 	}
 
-	const data = [
-		{ id: 1, modelID: '14144', modelName: 'Jon', validationSuite: 35 },
-		{ id: 2, modelID: '14145', modelName: 'Cersei', validationSuite: 42 },
-		{ id: 3, modelID: '14146', modelName: 'Jaime', validationSuite: 45 },
-		{ id: 4, modelID: '14147', modelName: 'Arya', validationSuite: 16 },
-		{ id: 5, modelID: '14148', modelName: 'Daenerys', validationSuite: null },
-		{ id: 6, modelID: '14149', modelName: null, validationSuite: 150 },
-		{ id: 7, modelID: '14150', modelName: 'Ferrara', validationSuite: 44 },
-		{ id: 8, modelID: '14151', modelName: 'Rossini', validationSuite: 36 },
-		{ id: 9, modelID: '14152', modelName: 'Harvey', validationSuite: 65 },
-	];
-
 	const user = { id: session.user.id, role: session.user.role }
 
+	// TODO: Replace with actual vod_api call
+	let validation_tasks = await get_docs("validation_tasks")
+	for(let vt of validation_tasks) {
+		let m = await get_doc("models", vt.model_id)
+		m['id'] = vt.model_id
+		vt['model_id'] = vt.model_id
+		vt['model_name'] = m.name
+		vt['model_description'] = m.description
+		vt.model = m
+	}
+
 	return {
-		props: { data, user }
+		props: { validation_tasks, user }
 	}
 }

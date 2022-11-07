@@ -1,8 +1,8 @@
 import NextAuth from "next-auth/next";
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios'
-import { ADMIN, DEVELOPER, VALIDATOR, GATEKEEPER } from "../../../helper/constants";
-import { signIn } from '../../../actions/auth'
+import { ADMIN, DEVELOPER, VALIDATOR, GATEKEEPER, VALIDATOR_MANAGER, SIGNIN, SIGNUP } from "../../../helper/constants";
+import { signIn, signUp } from '../../../actions/auth'
 
 /* 
 
@@ -123,7 +123,12 @@ export const authOptions = {
 				console.log("credentials: ", credentials)
 				// TODO: connect with backend API
 
-				// signIn(credentials)
+				if(credentials['action'] === SIGNIN) {
+					// signIn(credentials)
+				} else {
+					// signUp(credentials)
+				}
+
 
 				// const res = await axios.post(YOUR_API_URL + 'auth/signin', {
 				// 	username: credentials.username,
@@ -139,7 +144,9 @@ export const authOptions = {
 
 				// user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: GATEKEEPER }
 
-				user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: ADMIN }
+				// user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: VALIDATOR_MANAGER }
+
+				// user = { accessToken: "sssss", accessTokenExpiry: "sssss", refreshToken: "sssss", id: 1, role: ADMIN }
 
 				return user
 				// The object returned (user in this case), will be passed to the jwt callback.
