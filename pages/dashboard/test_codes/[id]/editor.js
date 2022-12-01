@@ -25,7 +25,7 @@ const style = {
 
 const templates = {
 	"PiML": `import piml\n\nclass PiMLTest():\n
-  def validate(model, params1, params2) {
+  def validate(model, params1, params2)
     # train_data = model.get_training_data()
     # test_data = model.get_testing_data()
 
@@ -33,9 +33,9 @@ const templates = {
 
     # vr = ValidationResult()
     # return vr
-  }\n}`,
+  \n`,
 	"DSAI": `import dsai\n\nclass DSAITest():\n
-  def validate(model, params1, params2) {
+  def validate(model, params1, params2)
     # train_data = model.get_training_data()
     # test_data = model.get_testing_data()
 
@@ -43,9 +43,9 @@ const templates = {
 
     # vr = ValidationResult()
     # return vr
-  }\n}`,
+  \n`,
 	"viper_com": `import viper_com\n\nclass ViperComTest():\n
-  def validate(model, params1, params2) {
+  def validate(model, params1, params2)
     # train_data = model.get_training_data()
     # test_data = model.get_testing_data()
 
@@ -53,7 +53,7 @@ const templates = {
 
     # vr = ValidationResult()
     # return vr
-  }\n}`
+  \n`
 }
 
 export default function TestCodeEditor({ test_code, test_id }) {
@@ -114,7 +114,7 @@ export default function TestCodeEditor({ test_code, test_id }) {
       </Modal>
 			<br/>
 			{
-				open ? '' : <CodeEditor saveCode={saveCode} template={test_code ? test_code : templates[template]} />
+				open ? '' : <CodeEditor saveCode={saveCode} test_id={test_id} template={test_code ? test_code : templates[template]} />
 			}
 		</ClippedDrawer>
 	)

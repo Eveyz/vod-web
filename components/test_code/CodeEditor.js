@@ -1,11 +1,12 @@
 import Editor, { Monaco } from "@monaco-editor/react";
 import React, { useRef, useState, useEffect } from 'react'
-import { IconButton, Button, CircularProgress, Toolbar, Modal, Box, Typography, Tooltip } from '@mui/material'
+import { IconButton, Button, Snackbar, Toolbar, Modal, Box, Typography, Tooltip } from '@mui/material'
 import { Replay, Refresh, DirectionsRun, Settings, Save } from '@mui/icons-material'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { LoadingButton } from '@mui/lab'
 
 import TestConfigForm from './TestConfigForm';
+import TestRunsTable from './TestRunsTable';
 
 const theme = createTheme({
   palette: {
@@ -92,12 +93,18 @@ const style = {
   p: 4,
 };
 
-export default function CodeEditor({template, saveCode}) {
+export default function CodeEditor({template, test_id, saveCode}) {
 
   const [isEditorReady, setIsEditorReady] = useState(false)
-  const [runResult, setRunResult] = useState(null)
+  const [runs, setRuns] = useState([
+    {job_id: 'xsreeeeee11231', status: 'running', started_at: '13:40', completed_at: '15:80', url: ''},
+    {job_id: 'xsreeeeee11231', status: 'running', started_at: '13:40', completed_at: '15:80', url: ''},
+    {job_id: 'xsreeeeee11231', status: 'error', started_at: '13:40', completed_at: '15:80', url: ''},
+    {job_id: 'xsreeeeee11231', status: 'completed', started_at: '13:40', completed_at: '15:80', url: 'http://linktoresult.com'}
+  ])
   const [running, setRunning] = useState(false)
   const [isConfigured, setIsConfigured] = useState(false)
+  const [timer, setTimer] = useState(null)
 
   const editorRef = useRef(null)
 
@@ -117,25 +124,43 @@ export default function CodeEditor({template, saveCode}) {
     handleClose()
 	}
 
-  const runCode = () => {
-
-    console.log(config)
-    console.log(editorRef.current.getValue())
+  const runCode = async () => {
     setRunning(true)
+    config['code'] = editorRef.current.getValue()
+    config['type'] = "testing" // mark current run is for testing only and differentiate from actual runs
 
-    // TODO: Send config and code to backend API for testing
-    // axios.post(url, { "code": editorRef.current.getValue() })
-    // .then(res => {
-    //   setRunResult(res.data)
-    //   props.runResult(res.data)
-    //   setRunning(false)
-    // })
-    // .catch(err => {
-    //   setRunning(false)
-    // })
+    // TODO: submit to backend for testing
+    // config: {conda_env: '', type: 'testing', transponder_url: '', params: [{name: '', value: ''}], code: ''}
+    // should return job_id from the api
+    // runTestCode(config)
+    setRunning(false)
+  }
+
+  useEffect(() => {
+    fetchRuns()
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      // Destroy timer to stop fetching runs
+      clearInterval(timer)
+    }
+  }, [timer])
+
+  const fetchRuns = () => {
+    // check result every 5s
+    var tm = setInterval(async () => {
+      // TODO: fetch all testing runs for current test from server
+      // const rs = await getRuns(test_id, 'testing')
+      // setRuns(rs)
+    }, 5000);
+    setTimer(tm)
   }
 
   const reset = () => {
+    setConfig(null)
+    setIsConfigured(false)
+    editorRef.current.setValue(template)
   }
 
   const saveTestCode = () => {
@@ -168,7 +193,7 @@ export default function CodeEditor({template, saveCode}) {
           <Typography variant="h6" component="h2">
             Testing Configuration
           </Typography>
-          <TestConfigForm config={config} saveConfig={saveConfig} />
+          <TestConfigForm config={config} saveConfig={saveConfig} handleClose={handleClose} />
         </Box>
       </Modal>
       {
@@ -201,7 +226,11 @@ export default function CodeEditor({template, saveCode}) {
           </span>
         </Tooltip>
       }
-      <IconButton variant="contained" color="warning" disabled={!isEditorReady || running} aria-label="refresh" sx={{my: 1, ml: 2}} onClick={reset}>
+      <IconButton variant="contained" color="warning" disabled={!isEditorReady || running} aria-label="refresh" sx={{my: 1, ml: 2}} onClick={() => {
+        if(window.confirm('Reset all?')) { 
+          reset()
+        }
+      }}>
         <Replay />
       </IconButton>
       <Button
@@ -213,6 +242,13 @@ export default function CodeEditor({template, saveCode}) {
       >
         Save
       </Button>
+      <Snackbar
+        open={running}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="Submitted successfully"
+      />
+      <TestRunsTable runs={runs} />
     </>
   );
 };
